@@ -1,0 +1,211 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"vcs": {
+		"clientKind": "git",
+		"useIgnoreFile": true,
+		"defaultBranch": "main"
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+	},
+	"formatter": { "indentStyle": "tab", "indentWidth": 2 },
+	"linter": {
+		"enabled": true,
+		"domains": { "next": "recommended", "react": "recommended" },
+		"rules": {
+			"recommended": true,
+			"a11y": {
+				"noAriaHiddenOnFocusable": "error",
+				"noAriaUnsupportedElements": "error",
+				"noStaticElementInteractions": "error",
+				"useAltText": "warn",
+				"useAriaPropsForRole": "error",
+				"useAriaPropsSupportedByRole": "error",
+				"useButtonType": "error",
+				"useHtmlLang": "error",
+				"useSemanticElements": "error",
+				"useValidAnchor": "warn",
+				"useValidAriaProps": "warn",
+				"useValidAriaRole": "error",
+				"useValidAriaValues": "error",
+				"useValidAutocomplete": "error",
+				"useValidLang": "error"
+			},
+			"complexity": {
+				"noArguments": "error",
+				"noEmptyTypeParameters": "error",
+				"noImplicitCoercions": "error",
+				"noUselessFragments": "error",
+				"noUselessRename": "error",
+				"noUselessStringConcat": "error",
+				"noUselessSwitchCase": "error",
+				"noUselessTypeConstraint": "error"
+			},
+			"correctness": {
+				"noChildrenProp": "error",
+				"noInvalidBuiltinInstantiation": "error",
+				"noProcessGlobal": "error",
+				"noUndeclaredVariables": "error",
+				"noUnreachable": "error",
+				"noUnusedPrivateClassMembers": "error",
+				"noUnusedVariables": "info",
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error",
+				"useIsNan": "error",
+				"useJsonImportAttributes": "error",
+				"useJsxKeyInIterable": "error",
+				"useSingleJsDocAsterisk": "error",
+				"useValidTypeof": "error"
+			},
+			"nursery": {
+				"noNextAsyncClientComponent": "warn",
+				"noShadow": "warn",
+				"useMaxParams": {
+					"level": "warn",
+					"options": {
+						"max": 4
+					}
+				},
+				"useReactFunctionComponents": "error",
+				"useSortedClasses": {
+					"level": "info",
+					"options": {
+						"attributes": ["classList"],
+						"functions": ["clsx", "cva", "cn", "tw", "tw.*"]
+					}
+				}
+			},
+			"performance": { "noImgElement": "off" },
+			"security": {
+				"noBlankTarget": "warn"
+			},
+			"style": {
+				"noCommonJs": "error",
+				"noParameterAssign": "error",
+				"noProcessEnv": "error",
+				"noSubstr": "error",
+				"useAtIndex": "error",
+				"useConsistentArrayType": {
+					"level": "error",
+					"options": {
+						"syntax": "shorthand"
+					}
+				},
+				"useConsistentBuiltinInstantiation": "error",
+				"useConst": "error",
+				"useDefaultParameterLast": "error",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"strictCase": false,
+						"requireAscii": true,
+						"filenameCases": ["kebab-case"]
+					}
+				},
+				"useImportType": "warn",
+				"useLiteralEnumMembers": "error",
+				"useNamingConvention": {
+					"level": "error",
+					"options": {
+						"strictCase": false,
+						"requireAscii": false,
+						"conventions": [
+							{
+								"selector": {
+									"kind": "any"
+								},
+								"match": "(.{2,})"
+							},
+							{
+								"selector": {
+									"kind": "variable"
+								},
+								"match": "(.{2,})",
+								"formats": ["camelCase", "CONSTANT_CASE", "PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "typeAlias"
+								},
+								"match": "(.+)(Type|Props)",
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "interface"
+								},
+								"match": "(.+)(Props|Dto|Response)",
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "enum"
+								},
+								"match": "(.+)",
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "enumMember"
+								},
+								"match": "(.+)",
+								"formats": ["PascalCase", "CONSTANT_CASE"]
+							},
+							{
+								"selector": {
+									"kind": "objectLiteralProperty"
+								},
+								"formats": ["camelCase", "snake_case"]
+							}
+						]
+					}
+				},
+				"useNodejsImportProtocol": "error",
+				"useNumberNamespace": "error",
+				"useSelfClosingElements": {
+					"level": "error",
+					"options": {
+						"ignoreHtmlElements": true
+					}
+				},
+				"useSymbolDescription": "error",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error",
+				"useTrimStartEnd": "error"
+			},
+			"suspicious": {
+				"noApproximativeNumericConstant": "error",
+				"noArrayIndexKey": "error",
+				"noConsole": "error",
+				"noDocumentCookie": "error",
+				"noGlobalIsFinite": "error",
+				"noGlobalIsNan": "error",
+				"noUnassignedVariables": "info",
+				"noVar": "warn",
+				"useErrorMessage": "warn",
+				"useStaticResponseMethods": "error",
+				"noUnknownAtRules": "off",
+				"noBiomeFirstException": "error",
+				"useBiomeIgnoreFolder": "error"
+			}
+		}
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"groups": [[":BUN:", ":NODE:"], ":BLANK_LINE:", "@/**"]
+					}
+				},
+				"useSortedAttributes": "on",
+				"useSortedProperties": "on"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": { "quoteStyle": "single", "semicolons": "asNeeded" }
+	}
+}
