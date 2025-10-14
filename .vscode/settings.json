@@ -13,5 +13,14 @@
 	"css.lint.unknownAtRules": "ignore",
 	"tailwindCSS.includeLanguages": {
 		"css": "tailwindcss"
+	},
+	"chat.instructionsFilesLocations": {
+		".agent/instructions": true
+	},
+	"chat.modeFilesLocations": {
+		".agent/chatmodes": true
+	},
+	"chat.promptFilesLocations": {
+		".agent/prompts": true
 	}
 }

@@ -1,139 +1,29 @@
 # AGENTS.md
 
-This file provides guidance for AI agents working on this codebase.
+Lightweight index and entry point for agent instructions used by this repository.
 
-## Project Overview
+This file provides a quick reference and points to the canonical, modular instruction files located in `.agent/instructions/`. The VS Code settings are configured to use `.agent/instructions` as the source of truth for chat/agent behavior.
 
-**Next.js Boilerplate Base** is a modern Next.js application built with the App Router architecture, featuring a clean and organized structure for scalable web applications.
+## Quick Reference
 
-### Tech Stack
-
-- **Framework**: Next.js 15.5.4 (with Turbopack)
+### Project Overview
+- **Framework**: Next.js 15.5.4 (App Router + Turbopack)
 - **Runtime**: Bun
 - **Language**: TypeScript 5.9.2
 - **UI**: React 19.1.1
 - **Styling**: Tailwind CSS 4.1.13
-- **Linting & Formatting**: Biome 2.2.4
+- **Linting**: Biome 2.2.4
 
-## Project Structure
+📄 **Full details**: [.agent/instructions/project-overview.instructions.md](.agent/instructions/project-overview.instructions.md)
 
-```
-/
-├── src/
-│   ├── app/              # Next.js App Router pages and layouts
-│   ├── core/             # Core configurations and utilities
-│   │   ├── config/       # Application configuration
-│   │   ├── lib/          # Third-party library integrations
-│   │   ├── providers/    # React context providers
-│   │   └── styles/       # Global styles
-│   ├── features/         # Feature-based modules
-│   ├── shared/           # Shared resources across features
-│   │   ├── components/   # Reusable UI components
-│   │   ├── constants/    # Application constants
-│   │   ├── hooks/        # Custom React hooks
-│   │   └── utils/        # Utility functions
-│   └── types/            # TypeScript type definitions
-├── public/               # Static assets
-└── [config files]        # Configuration files (biome, tsconfig, etc.)
-```
-
-## Coding Standards
-
-### File Naming Conventions
-
-**CRITICAL**: All files MUST follow **kebab-case** naming convention.
-
-- ✅ `user-profile.tsx`
-- ✅ `api-client.ts`
-- ✅ `use-auth.ts`
-- ❌ `UserProfile.tsx`
-- ❌ `apiClient.ts`
-- ❌ `useAuth.ts`
-
-This is enforced by Biome's `useFilenamingConvention` rule.
-
-### Code Style
-
-- **Indentation**: Tabs (width: 2)
-- **Quotes**: Single quotes for JavaScript/TypeScript
-- **Semicolons**: Not required (ASI - Automatic Semicolon Insertion)
-- **Import Organization**:
-  1. Node.js built-in modules (`:NODE:`) and Bun modules (`:BUN:`)
-  2. Blank line
-  3. Local imports with `@/` alias
-
-### Naming Conventions
-
-#### Variables
-- **Format**: `camelCase`, `CONSTANT_CASE`, or `PascalCase`
-- **Minimum length**: 2 characters
-
-#### Types & Interfaces
-- **Type Aliases**: Must end with `Type` or `Props` (e.g., `UserType`, `ButtonProps`)
-- **Interfaces**: Must end with `Props`, `Dto`, or `Response` (e.g., `ApiResponse`, `FormProps`)
-- **Format**: `PascalCase`
-
-#### Enums
-- **Format**: `PascalCase` for enum name
-- **Members**: `PascalCase` or `CONSTANT_CASE`
-
-#### Functions & Components
-- **React Components**: Use function components (enforced by `useReactFunctionComponents`)
-- **Format**: `PascalCase` for components, `camelCase` for functions
-- **Max Parameters**: 4 parameters maximum
-
-#### Object Properties
-- **Format**: `camelCase` or `snake_case`
-
-### TypeScript Guidelines
-
-- Import types using `import type` syntax when possible
-- Use shorthand array syntax: `string[]` instead of `Array<string>`
-- Avoid implicit coercions
-- Use exhaustive dependency arrays in React hooks
-- Place hooks at the top level only
-
-### React Best Practices
-
-- No `children` prop (use composition instead)
-- Use JSX keys in iterables
-- Avoid async client components in Next.js
-- No `<img>` element (use Next.js `<Image>` component)
-- Use semantic HTML elements
-- Include proper ARIA attributes
-
-### Security & Performance
-
-- No `target="_blank"` without `rel="noopener noreferrer"`
-- Avoid `process.env` directly (use configuration layer)
-- Use static response methods in Next.js routes
-
-### Accessibility
-
-- Always include alt text for images
-- Use valid ARIA props and roles
-- Include `lang` attribute in HTML
-- Use semantic elements
-- Ensure button elements have explicit `type` attribute
-
-## Path Aliases
-
-Use the `@/` alias to import from the `src` directory:
-
-```typescript
-import { Button } from '@/shared/components/button'
-import { API_URL } from '@/shared/constants/api'
-import { useAuth } from '@/shared/hooks/use-auth'
-```
-
-## Commands
+### Build and Test Commands
 
 ```bash
 # Development
-bun run dev          # Start development server with Turbopack
+bun run dev          # Start dev server with Turbopack
 
 # Build
-bun run build        # Build for production with Turbopack
+bun run build        # Production build with Turbopack
 
 # Production
 bun run start        # Start production server
@@ -143,101 +33,86 @@ bun run lint         # Check code with Biome
 bun run format       # Format code with Biome
 ```
 
-## Development Workflow
+📄 **Full details**: [.agent/instructions/commands.instructions.md](.agent/instructions/commands.instructions.md)
 
-1. **Creating New Files**: Always use kebab-case naming
-2. **Adding Features**: Place feature-specific code in `src/features/[feature-name]/`
-3. **Shared Code**: Place reusable components, hooks, and utils in `src/shared/`
-4. **Type Definitions**: Add shared types in `src/types/`
-5. **Styling**: Global styles go in `src/core/styles/`, component styles use Tailwind classes
-6. **Configuration**: App-level config goes in `src/core/config/`
+### Code Style Guidelines
 
-## Common Patterns
+**CRITICAL**: All files MUST use **kebab-case** naming:
+- ✅ `user-profile.tsx`, `api-client.ts`, `use-auth.ts`
+- ❌ `UserProfile.tsx`, `apiClient.ts`, `useAuth.ts`
 
-### Creating a Component
+**Key Rules**:
+- Indentation: Tabs (width: 2)
+- Quotes: Single quotes
+- Semicolons: Optional (ASI)
+- Import order: Node/Bun modules → blank line → local `@/` imports
+- Type imports: Use `import type` when possible
+- Components: Function components only (PascalCase)
+- Functions: camelCase, max 4 parameters
 
-```typescript
-// src/shared/components/button.tsx
-import type { ComponentProps } from 'react'
+📄 **Full details**: [.agent/instructions/coding-standards.instructions.md](.agent/instructions/coding-standards.instructions.md)
 
-interface ButtonProps extends ComponentProps<'button'> {
-	variant?: 'primary' | 'secondary'
-}
+### Testing Instructions
 
-export function Button({ variant = 'primary', ...props }: ButtonProps) {
-	return (
-		<button className={`btn btn-${variant}`} type="button" {...props}>
-			{props.children}
-		</button>
-	)
-}
+Currently, this project does not have a testing framework configured. When implementing tests:
+
+1. Use a testing framework compatible with Next.js 15 and React 19
+2. Follow the same kebab-case naming convention for test files
+3. Place unit tests alongside source files or in `__tests__` directories
+4. Place integration/e2e tests in a dedicated `tests/` directory at root
+5. Ensure all tests pass before merging code
+
+📄 **Patterns and examples**: [.agent/instructions/common-patterns.instructions.md](.agent/instructions/common-patterns.instructions.md)
+
+### Security Considerations
+
+**Environment Variables**:
+- ✅ Use `env.get()` from `@/core/config/env` (Zod-validated, type-safe)
+- ❌ Never access `process.env` directly
+- ❌ Never expose server-only variables to client (no `NEXT_PUBLIC_` prefix for secrets)
+
+**Links and Navigation**:
+- ✅ Always use `rel="noopener noreferrer"` with `target="_blank"`
+- ✅ Use Next.js `<Link>` component for internal navigation
+
+**Content Security**:
+- ✅ Validate and sanitize user input
+- ✅ Use Next.js `<Image>` component (automatic optimization)
+- ❌ Never use `<img>` tag directly
+
+**Accessibility & Security**:
+- ✅ Include alt text for images
+- ✅ Use semantic HTML elements
+- ✅ Include proper ARIA attributes
+- ✅ Use `lang` attribute in HTML
+
+📄 **Full details**: [.agent/instructions/error-prevention.instructions.md](.agent/instructions/error-prevention.instructions.md)
+
+## Modular Instruction Files
+
+All detailed instructions are maintained in separate files for easier navigation and maintenance:
+
+- **[project-overview.instructions.md](.agent/instructions/project-overview.instructions.md)** — Tech stack, architecture, project structure
+- **[coding-standards.instructions.md](.agent/instructions/coding-standards.instructions.md)** — Naming conventions, code style, TypeScript rules
+- **[environment-variables.instructions.md](.agent/instructions/environment-variables.instructions.md)** — Env var management with Zod validation
+- **[path-aliases.instructions.md](.agent/instructions/path-aliases.instructions.md)** — Import path configuration
+- **[commands.instructions.md](.agent/instructions/commands.instructions.md)** — Available npm/bun scripts
+- **[development-workflow.instructions.md](.agent/instructions/development-workflow.instructions.md)** — File organization and workflow
+- **[common-patterns.instructions.md](.agent/instructions/common-patterns.instructions.md)** — Code examples and patterns
+- **[error-prevention.instructions.md](.agent/instructions/error-prevention.instructions.md)** — Common mistakes and best practices
+
+## Maintenance
+
+- **Source of truth**: `.agent/instructions/*.instructions.md`
+- **VS Code chat settings**: `.vscode/settings.json` → `chat.instructionsFilesLocations`
+- **Update workflow**: Edit individual `.instructions.md` files, then regenerate this index if needed
+
+To regenerate a combined version from fragments (optional):
+```bash
+cat .agent/instructions/*.instructions.md > AGENTS_COMBINED.md
 ```
-
-### Creating a Custom Hook
-
-```typescript
-// src/shared/hooks/use-local-storage.ts
-import { useState, useEffect } from 'react'
-
-export function useLocalStorage<T>(key: string, initialValue: T) {
-	// Implementation
-}
-```
-
-### Creating a Type
-
-```typescript
-// src/types/user.ts
-export interface UserDto {
-	id: string
-	name: string
-	email: string
-}
-
-export type UserStatusType = 'active' | 'inactive' | 'pending'
-```
-
-## Error Prevention
-
-### Avoid These Common Mistakes
-
-1. ❌ Using `PascalCase` for filenames
-2. ❌ Importing without `import type` for type-only imports
-3. ❌ Using `console.log` (enforced by Biome)
-4. ❌ Using more than 4 function parameters
-5. ❌ Using `var` keyword
-6. ❌ Missing alt text on images
-7. ❌ Using `<img>` instead of Next.js `<Image>`
-8. ❌ Accessing `process.env` directly in components
-
-### Best Practices
-
-1. ✅ Use kebab-case for all filenames
-2. ✅ Organize imports properly (Node → blank line → local)
-3. ✅ Use `import type` for type imports
-4. ✅ Keep components focused and single-purpose
-5. ✅ Use TypeScript strictly (no `any` types)
-6. ✅ Follow accessibility guidelines
-7. ✅ Use Next.js optimized components (`<Image>`, `<Link>`)
-8. ✅ Leverage the `@/` path alias
-
-## Additional Notes
-
-- The project uses **Turbopack** for faster builds
-- Biome is configured with strict rules for code quality
-- The codebase enforces both Next.js and React recommended practices
-- All code must be ASCII-compatible
-- Version control is managed with Git (default branch: `main`)
-
-## Getting Help
-
-When uncertain about implementation details:
-1. Check existing patterns in similar files
-2. Review Biome configuration in `biome.json`
-3. Consult TypeScript paths in `tsconfig.json`
-4. Follow Next.js App Router conventions
 
 ---
 
-**Last Updated**: October 7, 2025
+**Last Updated**: October 13, 2025  
 **Project Version**: 0.0.1

@@ -1,6 +1,6 @@
 /**
  * Properties for logging HTTP request information.
- * 
+ *
  * @interface LoggerRequestProps
  * @property {string} method - The HTTP method used for the request (e.g., 'GET', 'POST', 'PUT', 'DELETE')
  * @property {string} url - The URL or endpoint that was requested
@@ -16,10 +16,10 @@ export interface LoggerRequestProps {
 
 /**
  * Represents metadata properties for logger operations.
- * 
+ *
  * A flexible record type that allows any string key to be associated with any value,
  * providing extensible metadata support for logging contexts.
- * 
+ *
  * @example
  * ```typescript
  * const logMeta: LoggerMetaProps = {

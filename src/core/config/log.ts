@@ -45,7 +45,7 @@ import { type Logger, pino } from 'pino'
  * @class AppLogger
  */
 class AppLogger {
-	private readonly isDevelopment = env.NODE_ENV === 'development'
+	private readonly isDevelopment = env.get('NODE_ENV') === 'development'
 
 	private logger: Logger = pino({
 		level: this.isDevelopment ? 'debug' : 'info',
