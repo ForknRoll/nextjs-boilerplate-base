@@ -54,6 +54,15 @@ class Env<
 		}
 	}
 
+	/**
+	 * Validates environment variables against a Zod schema.
+	 *
+	 * @template T - The Zod schema type extending ZodType
+	 * @param schema - The Zod schema to validate against
+	 * @param envVars - Record of environment variable key-value pairs where values can be string or undefined
+	 * @returns The validated and typed environment variables data
+	 * @throws {Error} When validation fails, includes detailed field error information
+	 */
 	private validateEnv<T extends z.ZodType>(
 		schema: T,
 		envVars: Record<string, string | undefined>,
@@ -69,6 +78,23 @@ class Env<
 		return parsed.data
 	}
 
+	/**
+	 * Ensures that environment variables are validated and available on the client side.
+	 * This method performs lazy initialization of environment variables by validating
+	 * only the shared and client schemas when running in a client environment.
+	 *
+	 * @private
+	 * @returns {void}
+	 *
+	 * @remarks
+	 * This method only executes validation when:
+	 * - The environment variables haven't been validated yet (`!this.env`)
+	 * - The code is running on the client side (`this.isClient`)
+	 *
+	 * The validation uses a merged schema combining both shared and client-specific
+	 * environment variable schemas to ensure all required variables are present
+	 * and correctly typed.
+	 */
 	private ensureEnv(): void {
 		if (!this.env && this.isClient) {
 			// On client, validate only shared + client schemas
@@ -78,6 +104,22 @@ class Env<
 		}
 	}
 
+	/**
+	 * Retrieves an environment variable value by key with type safety and access control.
+	 *
+	 * @template K - The key type extending the union of shared, client, and server environment variable keys
+	 * @param key - The environment variable key to retrieve
+	 * @returns The typed value of the environment variable
+	 *
+	 * @throws {Error} When attempting to access server-only variables from the client side
+	 * @throws {Error} When the requested environment variable is not defined
+	 *
+	 * @example
+	 * ```typescript
+	 * const apiUrl = env.get('API_URL');
+	 * const dbHost = env.get('DATABASE_HOST'); // Throws error if accessed from client
+	 * ```
+	 */
 	get<K extends keyof (z.infer<TShared> & z.infer<TClient> & z.infer<TServer>)>(
 		key: K,
 	): (z.infer<TShared> & z.infer<TClient> & z.infer<TServer>)[K] {
@@ -101,8 +143,34 @@ class Env<
 	}
 }
 
-export const env = new Env({
+const envInstance = new Env({
 	shared: SHARED_SCHEMA,
 	client: CLIENT_SCHEMA,
 	server: SERVER_SCHEMA,
 })
+
+type EnvType = z.infer<typeof SHARED_SCHEMA> &
+	z.infer<typeof CLIENT_SCHEMA> &
+	z.infer<typeof SERVER_SCHEMA>
+
+export const env = new Proxy(envInstance, {
+	get(target, prop: string | symbol) {
+		// Allow access to class methods
+		if (typeof prop === 'string' && prop in target) {
+			const value = target[prop as keyof typeof target]
+			// Bind methods to the target
+			if (typeof value === 'function') {
+				return value.bind(target)
+			}
+			return value
+		}
+
+		// For env variable access
+		if (typeof prop === 'string') {
+			return target.get(prop as keyof EnvType)
+		}
+
+		return undefined
+	},
+}) as Env<typeof SHARED_SCHEMA, typeof CLIENT_SCHEMA, typeof SERVER_SCHEMA> &
+	EnvType
