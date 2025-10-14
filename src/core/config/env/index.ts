@@ -8,6 +8,8 @@ import {
 } from '@/core/config/env/schemas'
 import { z } from 'zod/v3'
 
+const PREFIX = 'NEXT_PUBLIC_'
+
 type EnvSchema = z.ZodObject<z.ZodRawShape>
 
 interface EnvSchemas<
@@ -43,6 +45,9 @@ class Env<
 			server: (schemas.server ?? z.object({})) as TServer,
 		}
 
+		// Validate that all client variables have prefix
+		this.validateClientPrefix()
+
 		// Only validate on server side during construction
 		// On client, validation happens lazily on first access
 		if (!this.isClient) {
@@ -54,6 +59,43 @@ class Env<
 		}
 	}
 
+	/**
+	 * Validates that all client-side environment variable keys are properly prefixed.
+	 *
+	 * This method checks that every key in the client schema starts with the required PREFIX.
+	 * Client environment variables must follow this naming convention to be safely exposed
+	 * to the browser.
+	 *
+	 * @throws {Error} When one or more client schema keys don't start with the required PREFIX.
+	 * The error message includes the list of invalid variables and suggests renaming them
+	 * or moving them to the server schema.
+	 *
+	 * @private
+	 * @returns {void}
+	 */
+	private validateClientPrefix(): void {
+		const clientKeys = Object.keys(this.schemas.client.shape)
+
+		const invalidKeys = clientKeys.filter((key) => !key.startsWith(PREFIX))
+
+		if (invalidKeys.length > 0) {
+			throw new Error(
+				`Client environment variables must be prefixed with ${PREFIX}.\n\n` +
+					`Invalid variables: ${invalidKeys.join(', ')}.\n\n` +
+					`Please rename them or move them to the server schema.`,
+			)
+		}
+	}
+
+	/**
+	 * Validates environment variables against a Zod schema.
+	 *
+	 * @template T - The Zod schema type extending ZodType
+	 * @param schema - The Zod schema to validate against
+	 * @param envVars - Record of environment variable key-value pairs where values can be string or undefined
+	 * @returns The validated and typed environment variables data
+	 * @throws {Error} When validation fails, includes detailed field error information
+	 */
 	private validateEnv<T extends z.ZodType>(
 		schema: T,
 		envVars: Record<string, string | undefined>,
@@ -69,6 +111,23 @@ class Env<
 		return parsed.data
 	}
 
+	/**
+	 * Ensures that environment variables are validated and available on the client side.
+	 * This method performs lazy initialization of environment variables by validating
+	 * only the shared and client schemas when running in a client environment.
+	 *
+	 * @private
+	 * @returns {void}
+	 *
+	 * @remarks
+	 * This method only executes validation when:
+	 * - The environment variables haven't been validated yet (`!this.env`)
+	 * - The code is running on the client side (`this.isClient`)
+	 *
+	 * The validation uses a merged schema combining both shared and client-specific
+	 * environment variable schemas to ensure all required variables are present
+	 * and correctly typed.
+	 */
 	private ensureEnv(): void {
 		if (!this.env && this.isClient) {
 			// On client, validate only shared + client schemas
@@ -78,6 +137,22 @@ class Env<
 		}
 	}
 
+	/**
+	 * Retrieves an environment variable value by key with type safety and access control.
+	 *
+	 * @template K - The key type extending the union of shared, client, and server environment variable keys
+	 * @param key - The environment variable key to retrieve
+	 * @returns The typed value of the environment variable
+	 *
+	 * @throws {Error} When attempting to access server-only variables from the client side
+	 * @throws {Error} When the requested environment variable is not defined
+	 *
+	 * @example
+	 * ```typescript
+	 * const apiUrl = env.get('API_URL');
+	 * const dbHost = env.get('DATABASE_HOST'); // Throws error if accessed from client
+	 * ```
+	 */
 	get<K extends keyof (z.infer<TShared> & z.infer<TClient> & z.infer<TServer>)>(
 		key: K,
 	): (z.infer<TShared> & z.infer<TClient> & z.infer<TServer>)[K] {
@@ -101,8 +176,34 @@ class Env<
 	}
 }
 
-export const env = new Env({
+const envInstance = new Env({
 	shared: SHARED_SCHEMA,
 	client: CLIENT_SCHEMA,
 	server: SERVER_SCHEMA,
 })
+
+type EnvType = z.infer<typeof SHARED_SCHEMA> &
+	z.infer<typeof CLIENT_SCHEMA> &
+	z.infer<typeof SERVER_SCHEMA>
+
+export const env = new Proxy(envInstance, {
+	get(target, prop: string | symbol) {
+		// Allow access to class methods
+		if (typeof prop === 'string' && prop in target) {
+			const value = target[prop as keyof typeof target]
+			// Bind methods to the target
+			if (typeof value === 'function') {
+				return value.bind(target)
+			}
+			return value
+		}
+
+		// For env variable access
+		if (typeof prop === 'string') {
+			return target.get(prop as keyof EnvType)
+		}
+
+		return undefined
+	},
+}) as Env<typeof SHARED_SCHEMA, typeof CLIENT_SCHEMA, typeof SERVER_SCHEMA> &
+	EnvType
