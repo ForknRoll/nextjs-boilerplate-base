@@ -8,6 +8,8 @@ import {
 } from '@/core/config/env/schemas'
 import { z } from 'zod/v3'
 
+const PREFIX = 'NEXT_PUBLIC_'
+
 type EnvSchema = z.ZodObject<z.ZodRawShape>
 
 interface EnvSchemas<
@@ -43,6 +45,9 @@ class Env<
 			server: (schemas.server ?? z.object({})) as TServer,
 		}
 
+		// Validate that all client variables have prefix
+		this.validateClientPrefix()
+
 		// Only validate on server side during construction
 		// On client, validation happens lazily on first access
 		if (!this.isClient) {
@@ -51,6 +56,34 @@ class Env<
 				.merge(this.schemas.server)
 
 			this.env = this.validateEnv(schemaToValidate, process.env)
+		}
+	}
+
+	/**
+	 * Validates that all client-side environment variable keys are properly prefixed.
+	 *
+	 * This method checks that every key in the client schema starts with the required PREFIX.
+	 * Client environment variables must follow this naming convention to be safely exposed
+	 * to the browser.
+	 *
+	 * @throws {Error} When one or more client schema keys don't start with the required PREFIX.
+	 * The error message includes the list of invalid variables and suggests renaming them
+	 * or moving them to the server schema.
+	 *
+	 * @private
+	 * @returns {void}
+	 */
+	private validateClientPrefix(): void {
+		const clientKeys = Object.keys(this.schemas.client.shape)
+
+		const invalidKeys = clientKeys.filter((key) => !key.startsWith(PREFIX))
+
+		if (invalidKeys.length > 0) {
+			throw new Error(
+				`Client environment variables must be prefixed with ${PREFIX}.\n\n` +
+					`Invalid variables: ${invalidKeys.join(', ')}.\n\n` +
+					`Please rename them or move them to the server schema.`,
+			)
 		}
 	}
 
